@@ -59,8 +59,6 @@ public class ChatProtocolServer implements Observer {
     public void clientReport()
     {
         try {
-            for (Object mon: clientsList)
-            {
                 PrintWriter p = null;
                 PrintStream output;
                 java.util.Enumeration e = this.clientsList.elements();
@@ -81,8 +79,6 @@ public class ChatProtocolServer implements Observer {
                         System.out.println(reportStr);
                         output.println(reportStr);
                 }
-                
-            }
         } catch (IOException ex) {
                     Logger.getLogger(ChatProtocolServer.class.getName()).log(Level.SEVERE, null, ex);
                 }   
