@@ -5,10 +5,33 @@
  */
 package com.mycompany.ca.server;
 
-/**
- *
- * @author Sean
- */
+
+
+import java.net.ServerSocket;
+
+import java.io.*;
+import java.net.InetSocketAddress;
+
+
+
 public class ChatProtocolServer {
+    private ServerSocket serverSocket;
+ 
+    public void start(String IP, int PORT) throws IOException {
+        serverSocket = new ServerSocket();
+        serverSocket.bind(new InetSocketAddress(IP, PORT));
+        while (true)
+            new ClientHandler(serverSocket.accept()).run();
+            
+    }
+ 
+    public void stop() throws IOException {
+        serverSocket.close();
+    }
+    
+    public static void main(String[] args) throws IOException {
+        ChatProtocolServer server = new ChatProtocolServer(); 
+        server.start("localhost", 8081);
+    }
     
 }
