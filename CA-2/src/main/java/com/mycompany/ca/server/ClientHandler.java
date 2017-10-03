@@ -13,7 +13,8 @@ import java.net.Socket;
 
 
 public class ClientHandler {
-         private Socket clientSocket;
+        private String username;
+        private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
  
