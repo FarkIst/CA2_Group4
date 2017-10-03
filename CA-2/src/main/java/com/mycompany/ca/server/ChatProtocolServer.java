@@ -59,93 +59,80 @@ public class ChatProtocolServer implements Observer {
     public void clientReport()
     {
         try {
-                PrintWriter p = null;
-                PrintStream output;
-                java.util.Enumeration e = this.clientsList.elements();
-                String reportStr="CLIENTLIST : ";
-                while(e.hasMoreElements())
-                {
-                    ClientHandler client = (ClientHandler)e.nextElement();
-                    reportStr+=client.getUsername()+",";
-                    System.out.println(client.getUsername());
-                }
-                reportStr = reportStr.substring(0,reportStr.length()-1);
-                java.util.Enumeration v = this.clientsList.elements();
-                while(v.hasMoreElements())
-                {
-                    ClientHandler client = (ClientHandler)v.nextElement();
+            PrintWriter p = null;
+            PrintStream output;
+            java.util.Enumeration e = this.clientsList.elements();
+            String reportStr="CLIENTLIST : ";
+            while(e.hasMoreElements())
+            {
+                ClientHandler client = (ClientHandler)e.nextElement();
+                reportStr+=client.getUsername()+",";
+            }
+            reportStr = reportStr.substring(0,reportStr.length()-1);
+            java.util.Enumeration v = this.clientsList.elements();
+            while(v.hasMoreElements())
+            {
+                ClientHandler client = (ClientHandler)v.nextElement();
 
-                        output = new PrintStream(client.getClientSocket().getOutputStream());
-                        System.out.println(reportStr);
-                        output.println(reportStr);
-                }
+                    output = new PrintStream(client.getClientSocket().getOutputStream());
+                    output.println(reportStr);
+            }
         } catch (IOException ex) {
-                    Logger.getLogger(ChatProtocolServer.class.getName()).log(Level.SEVERE, null, ex);
-                }   
+            Logger.getLogger(ChatProtocolServer.class.getName()).log(Level.SEVERE, null, ex);
+        }   
     }
     
     public Boolean containsClient(String s, String sender){
         try {
-        java.util.Enumeration v = this.clientsList.elements();
-        java.util.Enumeration x = this.clientsList.elements();
-        PrintWriter p = null;
-        PrintStream output;
-        int num = 0;
-        System.out.println("BEFORE !CONTAINS : ");
-        if (!s.contains(":"))
-        {
-            return false;
-        }
-            
-        int startMsg = s.indexOf(":");
- 
-        String msg = s.substring(startMsg+1,s.length());
-        List<String>nameList = new ArrayList();
-        System.out.println("BEFORE SCONTAINS , ");
-        if (s.contains(","))
-        {
-            System.out.println("IN COMMA IF STATEMENT");
-            int commaLoc = s.indexOf(",");
-            nameList.add(s.substring(0,commaLoc));
-            nameList.add(s.substring(commaLoc+1,s.length()));
-        }else
-        {
-            System.out.println("IN SINGLE ARRAYLIST SIZE");
-            System.out.println(s.substring(0,s.indexOf(":")));
-            if (s.substring(0,s.indexOf(":")).equals("*"))
+            java.util.Enumeration v = this.clientsList.elements();
+            java.util.Enumeration x = this.clientsList.elements();
+            PrintWriter p = null;
+            PrintStream output;
+            int num = 0;
+            if (!s.contains(":"))
             {
-                
-                while(x.hasMoreElements())
+                return false;
+            }
+
+            int startMsg = s.indexOf(":");
+
+            String msg = s.substring(startMsg+1,s.length());
+            List<String>nameList = new ArrayList();
+            if (s.contains(","))
+            {
+                int commaLoc = s.indexOf(",");
+                nameList.add(s.substring(0,commaLoc));
+                nameList.add(s.substring(commaLoc+1,s.length()));
+            }else
+            {
+                if (s.substring(0,s.indexOf(":")).equals("*"))
                 {
-                    System.out.println("GENERATING MY ARRAYLIST FROM STAR :))");
-                    ClientHandler client = (ClientHandler)x.nextElement();
-                    nameList.add(client.getUsername());
+                    while(x.hasMoreElements())
+                    {
+                        System.out.println("GENERATING MY ARRAYLIST FROM STAR :))");
+                        ClientHandler client = (ClientHandler)x.nextElement();
+                        nameList.add(client.getUsername());
+                    }
+                }
+                nameList.add(s.substring(0,s.indexOf(":")));
+            }
+            for (String userString: nameList){
+                while(v.hasMoreElements())
+                {
+                    ClientHandler client = (ClientHandler)v.nextElement();
+                    if ( client.getUsername().equals(userString) )
+                    {
+                        num++;
+                        output = new PrintStream(client.getClientSocket().getOutputStream());
+                        output.println("MSGRES:"+sender+":"+msg);
+                    }
+                }
+                if (num > 0)
+                {  
+                    System.out.println("NICKNAME HIT!!"); 
+                    return true;
                 }
             }
-            nameList.add(s.substring(0,s.indexOf(":")));
-        }
-        for (String userString: nameList){
-            System.out.println("IN FOR LOOP");
-        while(v.hasMoreElements())
-        {
-            System.out.println("IN WHILE LOOP");
-            ClientHandler client = (ClientHandler)v.nextElement();
-            if ( client.getUsername().equals(userString) ){
-                System.out.println("USERNAME MATCH TO USERSTRING");
-                num++;
-                output = new PrintStream(client.getClientSocket().getOutputStream());
-                System.out.println("OUTPUTTING MSG");
-                System.out.println("MSGRES:"+sender+":");
-                output.println("MSGRES:"+sender+":"+msg);
-                System.out.println("AFTER MESSAGE OUTPUT");
-            }
-        }
-        if (num > 0)
-        {  
-            System.out.println("NICKNAME HIT!!"); 
-            return true;
-        }
-        }
         } catch (IOException ex) {
             Logger.getLogger(ChatProtocolServer.class.getName()).log(Level.SEVERE, null, ex);
         }

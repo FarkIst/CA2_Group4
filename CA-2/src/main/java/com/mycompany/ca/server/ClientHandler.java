@@ -36,7 +36,8 @@ public class ClientHandler extends Observable implements Runnable{
     public void run(){
         String inputLine = scan.nextLine();
         inputHandler.initalize(inputLine);
-        while (!inputLine.equals("stop"))  {
+        while (!inputLine.equals("stop"))  
+        {
             inputLine = scan.nextLine();
             inputHandler.handleInput(inputLine);
         }
