@@ -66,7 +66,10 @@ public class ChatProtocolServer implements Observer {
             while(e.hasMoreElements())
             {
                 ClientHandler client = (ClientHandler)e.nextElement();
-                reportStr+=client.getUsername()+",";
+                if ( client.getUsername()!= null )
+                {
+                    reportStr+=client.getUsername()+",";
+                }
             }
             reportStr = reportStr.substring(0,reportStr.length()-1);
             java.util.Enumeration v = this.clientsList.elements();
@@ -93,9 +96,7 @@ public class ChatProtocolServer implements Observer {
             {
                 return false;
             }
-
             int startMsg = s.indexOf(":");
-
             String msg = s.substring(startMsg+1,s.length());
             List<String>nameList = new ArrayList();
             if (s.contains(","))
@@ -109,7 +110,6 @@ public class ChatProtocolServer implements Observer {
                 {
                     while(x.hasMoreElements())
                     {
-                        System.out.println("GENERATING MY ARRAYLIST FROM STAR :))");
                         ClientHandler client = (ClientHandler)x.nextElement();
                         nameList.add(client.getUsername());
                     }
@@ -129,14 +129,12 @@ public class ChatProtocolServer implements Observer {
                 }
                 if (num > 0)
                 {  
-                    System.out.println("NICKNAME HIT!!"); 
                     return true;
                 }
             }
         } catch (IOException ex) {
             Logger.getLogger(ChatProtocolServer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("WOOAH RETURNING FALSE");
         return false;
     }
     

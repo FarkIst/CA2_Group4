@@ -15,7 +15,6 @@ public class InputHandler {
     {
         if (s.length()>7)
         {
-            System.out.println("TRUUUE");
             if (s.substring(0,6).equals("LOGIN:"))
             {
                 clientHandler.setUsername(s.substring(6,s.length()));
