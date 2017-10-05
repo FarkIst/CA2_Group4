@@ -35,13 +35,17 @@ public class InputHandler {
             clientHandler.closeClient();
             server.clientReport();
         }
-        if (s.length()>6 && s.substring(0,4).equals("MSG:"))
+        else if (s.length()>6 && s.substring(0,4).equals("MSG:"))
         {
             Boolean stringHandled = server.containsClient(s.substring(4, s.length()), clientHandler.getUsername());
             if (!stringHandled)
             {
                 clientHandler.closeClient();
             }
-        }    
+        } 
+        else
+        {
+            clientHandler.closeClient();
+        }
     }
 }
