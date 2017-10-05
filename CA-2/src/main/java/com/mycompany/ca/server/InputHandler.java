@@ -20,7 +20,6 @@ public class InputHandler {
                 clientHandler.setUsername(s.substring(6,s.length()));
                 server.clientReport();
             }else{
-                System.out.println(s.substring(0,6)+" !=  "+"LOGIN:");
                 clientHandler.closeClient();
             }
         }else{

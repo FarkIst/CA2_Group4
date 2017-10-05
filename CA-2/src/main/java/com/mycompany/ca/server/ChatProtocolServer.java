@@ -103,35 +103,34 @@ public class ChatProtocolServer implements Observer {
             {
                 int commaLoc = s.indexOf(",");
                 nameList.add(s.substring(0,commaLoc));
-                nameList.add(s.substring(commaLoc+1,s.length()));
-            }else
-            {
-                if (s.substring(0,s.indexOf(":")).equals("*"))
+                nameList.add(s.substring(commaLoc+1,s.indexOf(":")));
+            }else if (s.substring(0,s.indexOf(":")).equals("*")) {
+                while(x.hasMoreElements())
                 {
-                    while(x.hasMoreElements())
-                    {
-                        ClientHandler client = (ClientHandler)x.nextElement();
-                        nameList.add(client.getUsername());
-                    }
+                    ClientHandler client = (ClientHandler)x.nextElement();
+                    nameList.add(client.getUsername());
                 }
+            }
+            else {
                 nameList.add(s.substring(0,s.indexOf(":")));
             }
-            for (String userString: nameList){
                 while(v.hasMoreElements())
                 {
-                    ClientHandler client = (ClientHandler)v.nextElement();
-                    if ( client.getUsername().equals(userString) )
+                    for (String userString: nameList)
                     {
-                        num++;
-                        output = new PrintStream(client.getClientSocket().getOutputStream());
-                        output.println("MSGRES:"+sender+":"+msg);
-                    }
-                }
-                if (num > 0)
+                        ClientHandler client = (ClientHandler)v.nextElement();
+                        if ( client.getUsername().equals(userString) )
+                        {
+                            num++;
+                            output = new PrintStream(client.getClientSocket().getOutputStream());
+                            output.println("MSGRES:"+sender+":"+msg);
+                        }
+                    }                 
+                }                
+            if (num > 0)
                 {  
                     return true;
                 }
-            }
         } catch (IOException ex) {
             Logger.getLogger(ChatProtocolServer.class.getName()).log(Level.SEVERE, null, ex);
         }
