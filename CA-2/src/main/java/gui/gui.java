@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,6 +28,7 @@ public class gui extends javax.swing.JFrame {
      PrintWriter out;
      Scanner scan ;
      Socket socket = null; // Client socket
+     private InReader inreader;
     
     /**
      * Creates new form gui
@@ -139,13 +141,13 @@ public class gui extends javax.swing.JFrame {
     String server = jTextIP.getText();
             int servPort = Integer.parseInt(jTextPort.getText());
             try {
-                    socket = new Socket(server, servPort);
-                    forwardMsg("Connected to server.."+server);
-                    out = new PrintWriter(socket.getOutputStream(), true);
-                    scan = new Scanner(socket.getInputStream());  
-                    InReader inreader = new InReader(this);
-                    ExecutorService es =  Executors.newFixedThreadPool(1);
-                    es.execute(inreader);
+                socket = new Socket(server, servPort);
+                forwardMsg("Connected to server.."+server);
+                out = new PrintWriter(socket.getOutputStream(), true);
+                scan = new Scanner(socket.getInputStream());  
+                InReader inreader = new InReader(this);
+                ExecutorService es =  Executors.newFixedThreadPool(1);
+                es.execute(inreader);
                 } catch (IOException ioe) {
                     forwardMsg("Cant connect to "+server+" at "+servPort+".");
                     socket = null;
@@ -166,8 +168,8 @@ public class gui extends javax.swing.JFrame {
        if (!(jTextSend.equals("")) && !(socket == null))
                {
                    out.println(jTextSend.getText());
+                   jTextSend.setText("");
                }
-        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     
@@ -229,10 +231,26 @@ class InReader implements Runnable{
     }
     
     public void run(){
+        try{
         while ((stringIn = mygui.scan.nextLine()) != null)
         {
             mygui.forwardMsg(stringIn);
+        }   
+        }catch(NoSuchElementException nsee){
+            closeGuiClient();
         }
-        
+    }
+    
+    //Use this method to close the socket
+    public void closeGuiClient()
+    {
+        mygui.forwardMsg("You have disconnected from server.");
+        mygui.scan.close();
+        mygui.out.close();
+        try {
+            mygui.socket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(InReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
