@@ -6,16 +6,30 @@
 package gui;
 
 import com.mycompany.ca.server.ChatProtocolServer;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author AR
  */
 public class gui extends javax.swing.JFrame {
-
+    private PrintWriter out;
+    private Scanner scan ;
+    private Socket socket = null; // Client socket
+    
     /**
      * Creates new form gui
      */
+    
     public gui() {
         initComponents();
     }
@@ -120,15 +134,35 @@ public class gui extends javax.swing.JFrame {
 
     ChatProtocolServer cps;
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        //Connect Button
-       
-        
+    String server = jTextIP.getText();
+            int servPort = Integer.parseInt(jTextPort.getText());
+            try {
+                    socket = new Socket(server, servPort);
+                    forwardMsg("Connected to server.."+server);
+                    out = new PrintWriter(socket.getOutputStream(), true);
+                    scan = new Scanner(socket.getInputStream());  
+                } catch (IOException ioe) {
+                    forwardMsg("Cant connect to "+server+" at "+servPort+".");
+                    socket = null;
+                } 
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void forwardMsg(String str){
+        if (!"".equals(jTextReceive.getText())){
+            jTextReceive.append("\n"+str); 
+        }else{
+            jTextReceive.setText(str);
+        }
+    }
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         //Send button
+       if (!(jTextSend.equals("")) && !(socket == null))
+               {
+                   out.println(jTextSend.getText());
+               }
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
