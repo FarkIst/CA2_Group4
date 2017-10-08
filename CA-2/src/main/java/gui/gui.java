@@ -14,6 +14,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,9 +24,9 @@ import java.util.logging.Logger;
  * @author AR
  */
 public class gui extends javax.swing.JFrame {
-    private PrintWriter out;
-    private Scanner scan ;
-    private Socket socket = null; // Client socket
+     PrintWriter out;
+     Scanner scan ;
+     Socket socket = null; // Client socket
     
     /**
      * Creates new form gui
@@ -141,13 +143,16 @@ public class gui extends javax.swing.JFrame {
                     forwardMsg("Connected to server.."+server);
                     out = new PrintWriter(socket.getOutputStream(), true);
                     scan = new Scanner(socket.getInputStream());  
+                    InReader inreader = new InReader(this);
+                    ExecutorService es =  Executors.newFixedThreadPool(1);
+                    es.execute(inreader);
                 } catch (IOException ioe) {
                     forwardMsg("Cant connect to "+server+" at "+servPort+".");
                     socket = null;
                 } 
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void forwardMsg(String str){
+    public void forwardMsg(String str){
         if (!"".equals(jTextReceive.getText())){
             jTextReceive.append("\n"+str); 
         }else{
@@ -165,6 +170,7 @@ public class gui extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    
     /**
      * @param args the command line arguments
      */
@@ -211,4 +217,22 @@ public class gui extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextReceive;
     private javax.swing.JTextField jTextSend;
     // End of variables declaration//GEN-END:variables
+}
+
+
+class InReader implements Runnable{
+    private gui mygui;
+    private String stringIn;
+    
+    public InReader(gui mygui){
+        this.mygui = mygui;
+    }
+    
+    public void run(){
+        while ((stringIn = mygui.scan.nextLine()) != null)
+        {
+            mygui.forwardMsg(stringIn);
+        }
+        
+    }
 }
